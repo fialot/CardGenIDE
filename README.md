@@ -1,0 +1,3 @@
+# CardGenIDE
+
+Playing cards generator
