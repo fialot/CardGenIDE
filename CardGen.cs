@@ -782,8 +782,39 @@ namespace CardGen
                                 showItem = cardLabel.show;
                             }
                             text = text.Replace(@"\n", "\n");
+
+                            // ----- init settings -----
+                            TPoint location = cardLabel.location;
+                            int angle = cardLabel.angle;
+                            Font font = cardLabel.font;
+                            Color color = cardLabel.color;
+                            Color backColor = cardLabel.backColor;
+                            Align alignment = cardLabel.alignment;
+                            // ----- check function settings -----
+                            int pos1 = text.IndexOf("{");
+                            int pos2 = text.IndexOf("}");
+                            string funcText = "";
+                            if (pos1 >= 0 && pos2 > pos1)
+                            {
+                                funcText = text.Substring(pos1 + 1, pos2 - pos1 - 1);
+                                text = text.Remove(pos1, pos2 - pos1 + 1);
+                                string[] func = funcText.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
+                                for (int j = 0; j < func.Length; j++)
+                                {
+                                    string[] funcItem = func[j].Split(new string[] { "=" }, StringSplitOptions.RemoveEmptyEntries);
+                                    if (funcItem.Length == 2)
+                                    {
+                                        if (funcItem[0] == "color")
+                                        {
+                                            color = Color.FromName(funcItem[1]);
+                                        }
+                                    }
+                                }
+
+                            }
+
                             if (cardLabel.capitalize) text = text.ToUpper();
-                            if (showItem) card.DrawLabel(text, cardLabel.location, cardLabel.angle, cardLabel.font, cardLabel.color, cardLabel.backColor, cardLabel.alignment);
+                            if (showItem) card.DrawLabel(text, location, angle, font, color, backColor, alignment);
                         }
                         break;
                     case CardObjectType.text:
@@ -818,12 +849,13 @@ namespace CardGen
 
                         if (list != null)
                         {
+                            usedPath = GetValFromID(list, imgList[itemList[i].index].ID);
                             if (cardImg.type != null && cardImg.type != "")
                             {
                                 showItem = ContainType(list, cardImg.type.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries));
-                            } else
+                            }
+                            else
                             {
-                                usedPath = GetValFromID(list, imgList[itemList[i].index].ID);
                                 if (usedPath != "") showItem = true;
                             }
                         }
