@@ -2423,10 +2423,14 @@ namespace CardGen
         public int Width { get; }
         public int Height { get; }
 
+        public int DPI { get; }
+
         public CardImg(int width, int height, int DPI)
         {
             Width = width;
             Height = height;
+            this.DPI = DPI;
+
             int wPix = (int)(0.03937 * width * DPI);
             int hPix = (int)(0.03937 * height * DPI);
 
@@ -2625,6 +2629,14 @@ namespace CardGen
             {
                 y = (cardImg.Height * y) / 100;
             }
+            if (location.x.Unit == CardUnits.mm)
+            {
+                x = x * DPI / 25.4f;
+            }
+            if (location.y.Unit == CardUnits.mm)
+            {
+                y = y * DPI / 25.4f;
+            }
 
 
 
@@ -2642,6 +2654,10 @@ namespace CardGen
                 else if (size.x.Unit == CardImgUnits.imgPerc)
                 {
                     setWidth = (upImg.Width * setWidth) / 100;
+                }
+                else if (size.x.Unit == CardImgUnits.mm)
+                {
+                    setWidth = setWidth * DPI / 25.4f;
                 }
             }
             if (height < 1)
@@ -2674,6 +2690,12 @@ namespace CardGen
                 else if (size.y.Unit == CardImgUnits.imgPerc)
                 {
                     setHeight = (upImg.Height * setHeight) / 100;
+                    if (size.x.Value == 0)
+                        setWidth = (setHeight / upImg.Height) * upImg.Width;
+                }
+                else if (size.y.Unit == CardImgUnits.mm)
+                {
+                    setHeight = setHeight * DPI / 25.4f;
                     if (size.x.Value == 0)
                         setWidth = (setHeight / upImg.Height) * upImg.Width;
                 }
